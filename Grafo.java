@@ -66,32 +66,54 @@ private String nome;
         for(int i = 0 ; i < arestas.size() ; i++) {
             if(arestas.get(i).getVertice1().getValor() == valor && arestas.get(i).getVertice2().getValor() == valor  ){
                grau +=2;
+                // caso ele mande pra ele msm
             } 
             else if (arestas.get(i).getVertice1().getValor() == valor || arestas.get(i).getVertice2().getValor() == valor){
                grau++;
             }
         }
-        
         return grau;
     }
 
     public Vertice maxGrau() {
-        int max = 0;
+        // calcula o grau maximo
+        int max = Integer.MIN_VALUE ;
         int indexVertice = 0;
         for(int i = 0 ; i < vertices.size() ; i++) {
             int valorVertice = vertices.get(i).getValor() ;
-            if(this.getGrau(valorVertice) > max) {
+            if(this.getGrau(valorVertice) >= max) {
                 max = this.getGrau(valorVertice);
                 indexVertice = i;
             }
         }
-        
         return vertices.get(indexVertice);
     }
 
+    public Vertice minGrau() {
+        // calcula o grau minimo
+        int min = Integer.MAX_VALUE ;
+        int indexVertice = 0;
+        for(int i = 0 ; i < vertices.size() ; i++) {
+            int valorVertice = vertices.get(i).getValor() ;
+            if(this.getGrau(valorVertice) <= min) {
+                min = this.getGrau(valorVertice);
+                indexVertice = i;
+            }
+        }
+        return vertices.get(indexVertice);
+    }
 
+    public float medioGrau() {
+        // calcula o grau medio
+        int tamanho = vertices.size();
+        int soma = 0;
+        for(int i = 0 ; i < vertices.size() ; i++) {
+            int valorVertice = vertices.get(i).getValor() ;
+            soma += this.getGrau(valorVertice);
+        }
 
-
+        return soma / tamanho;
+    }
 
     public String getNome() {
         return this.nome;
