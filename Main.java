@@ -5,13 +5,11 @@ public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         Grafo grafo = new Grafo();
-        boolean isAtivo = true;
-
-        
+        boolean isAtivo = true; 
 
         while (isAtivo) {
             System.out.println("0 - Sair do programa");
-            System.out.println("1 - Escolher um nome pro grafo");
+            System.out.println("1 - Iniciar o grafo");
             System.out.println("2 - Adicionar vertice");
             System.out.println("3 - Adicionar arestas");
             System.out.println("4 - Testar existencia de uma aresta entre dois vertices");
@@ -38,14 +36,13 @@ public class Main {
             int option = input.nextInt();
             System.out.println();
 
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            // System.out.print("\033[H\033[2J");
+            // System.out.flush();
 
             switch (option) {
                 case 1:
-                    System.out.print("Escolha um nome pro grafo :");
-                    String nomeGrafo = input.next();
-                    grafo.setNome(nomeGrafo);
+                    grafo.init();
+                    System.out.println("Grafo iniciado com sucesso!");
                     break;
                 case 2:
                     System.out.print("Qual o valor do vertice deseja adicionar? ");
@@ -88,8 +85,15 @@ public class Main {
                     grafo.removeArestas(valorSaida, valorChegada);
                     break;
                 case 7:
-                    // Vertices Adjacentes
-                    System.out.println("Sunday");
+                    ArrayList<Vertice> verticesAdjacentes;
+                    System.out.print("Qual o vertice que deseja ver os adjacentes? ");
+                    valor = input.nextInt();
+                    verticesAdjacentes = grafo.getAdjacentes(valor);
+                    System.out.print("Essas sao os vertices adjacentes ");
+                    for(int i = 0 ; i < verticesAdjacentes.size() ; i++){
+                        System.out.print(" " + verticesAdjacentes.get(i).getValor() + "");
+                    }
+                    System.out.println();
                     break;
                 case 8:
                     System.out.print("Qual o valor do vertice que deseja verificar o grau? ");
@@ -109,6 +113,12 @@ public class Main {
                     break;
                 case 12:
                     // Verificar se grafo é conexo
+                    break;
+                case 13:
+                    // Gerar matriz de adjacencias
+                    break;
+                case 14:
+                    // Caminho de euler
                     break;
                 default:
                     isAtivo = false;

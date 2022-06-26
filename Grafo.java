@@ -11,6 +11,26 @@ public class Grafo {
         this.nome = "Default";
     }
 
+    public String getNome() {
+        return this.nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void init(){
+        this.addVertice(1);
+        this.addVertice(2);
+        this.addVertice(3);
+        this.addVertice(4);
+        this.addArestas("a", 1, 1, 2);
+        this.addArestas("b", 3, 3, 1);
+        this.addArestas("c", 3, 1, 4);
+        this.addArestas("d", 5, 4, 2);
+        this.addArestas("e", 2, 3, 4);
+    }
+
     public void showVertices() {
         // printa linearmente os vertices
         for (int i = 0; i < vertices.size(); i++) {
@@ -40,6 +60,7 @@ public class Grafo {
 
         Vertice vertice = new Vertice(valor);
         this.vertices.add(vertice);
+        System.out.println("Vertice inserido com sucesso");
     }
 
     public int findVertice(int valor) {
@@ -57,12 +78,18 @@ public class Grafo {
         // Remover vertices
 
         // Remoção das arestas ligadas ao vertice
-        for (int i = 0; i < arestas.size(); i++) {
-            if ((arestas.get(i).getVerticeSaida().getValor() == valor
-                    || arestas.get(i).getVerticeChegada().getValor() == valor)) {
-                arestas.remove(i);
-            }
+        
+          // Remove a aresta em que o vertice é o valor de saida ou chegada 
+        for(int i = 0 ; i < vertices.size() ; i++){
+            this.removeArestas(valor, this.vertices.get(i).getValor());
+            this.removeArestas(this.vertices.get(i).getValor(), valor);
         }
+        
+        // for (int i = 0; i < arestas.size(); i++) {
+        //     if (((arestas.get(i).getVerticeSaida().getValor() == valor) || (arestas.get(i).getVerticeChegada().getValor() == valor))) {
+        //         arestas.remove(i);
+        //     }
+        // }
 
         // Remoção do vertice
         for (int i = 0; i < vertices.size(); i++) {
@@ -103,8 +130,15 @@ public class Grafo {
             return;
         }
 
-        aresta.setVerticeSaida(vertices.get(indiceSaida));
-        aresta.setVerticeChegada(vertices.get(indiceChegada));
+        // Não permite a criação de arestas iguais
+        if(findArestas(valorSaida, valorChegada) != -1){
+            System.out.println("Não é permitido a criação de uma arestas iguais");
+            return;
+        }
+
+        aresta.setVerticeSaida(this.vertices.get(indiceSaida));
+        aresta.setVerticeChegada(this.vertices.get(indiceChegada));
+
 
         this.arestas.add(aresta);
         System.out.println("Aresta inserida com sucesso");
@@ -112,7 +146,6 @@ public class Grafo {
 
     public int findArestas(int valorSaida, int valorChegada) {
         // Testa existencia de uma aresta entre dois vertices
-        // Permitir duas arestas iguais?
         for (int i = 0; i < arestas.size(); i++) {
             if (arestas.get(i).getVerticeSaida().getValor() == valorSaida
                     && arestas.get(i).getVerticeChegada().getValor() == valorChegada) {
@@ -211,11 +244,42 @@ public class Grafo {
         return soma / (float) tamanho;
     }
 
-    public String getNome() {
-        return this.nome;
+    public ArrayList<Vertice> getAdjacentes(int valor){
+        
+        ArrayList<Aresta> arestasAdjacentes = new ArrayList<Aresta>();
+        ArrayList<Vertice> verticesAdjacentes = new ArrayList<Vertice>();
+        
+        int indiceAresta;
+        
+        // pegar as arestas que possui o vertice como saida
+        for(int i = 0 ; i < vertices.size() ; i++){
+            indiceAresta = this.findArestas(valor, vertices.get(i).getValor());
+            if(indiceAresta != -1){
+                arestasAdjacentes.add(this.arestas.get(indiceAresta));
+            }
+        }
+
+        // pegar as arestas que possui o vertice  chegada
+        for(int i = 0 ; i < vertices.size() ; i++){
+            indiceAresta = this.findArestas(vertices.get(i).getValor() , valor );
+            if(indiceAresta != -1){
+                arestasAdjacentes.add(this.arestas.get(indiceAresta));
+            }
+        }
+
+        // pegar os vertices que sejam diferentes do passado como valor
+        for(int i = 0 ; i < arestasAdjacentes.size() ; i++){
+            if(arestasAdjacentes.get(i).getVerticeChegada().getValor() != valor){
+                verticesAdjacentes.add(arestasAdjacentes.get(i).getVerticeChegada());
+            }
+
+            if(arestasAdjacentes.get(i).getVerticeSaida().getValor() != valor){
+                verticesAdjacentes.add(arestasAdjacentes.get(i).getVerticeSaida());
+            }
+        }
+
+        return verticesAdjacentes;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+
 }
