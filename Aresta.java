@@ -1,36 +1,47 @@
 public class Aresta {
     
-    private Vertice vertice1;
-    private Vertice vertice2;
+    private Vertice verticeSaida;
+    private Vertice verticeChegada;
     private String nome;
+    private int peso;
   
-    public Aresta(String nome){
+    public Aresta(String nome , int peso){
         this.nome = nome;
+        this.peso = peso;
     }
 
-    public Vertice getVertice1() {
-        return this.vertice1;
+    public Vertice getVerticeSaida() {
+        return this.verticeSaida;
     }
 
-    public void setVertice1(Vertice vertice1) {
-        this.vertice1 = vertice1;
+    public void setVerticeSaida(Vertice verticeSaida) {
+        this.verticeSaida = verticeSaida;
     }
 
-    public Vertice getVertice2() {
-        return this.vertice2;
+    public Vertice getVerticeChegada() {
+        return this.verticeChegada;
     }
 
-    public void setVertice2(Vertice vertice2) {
-        this.vertice2 = vertice2;
+    public void setVerticeChegada(Vertice verticeChegada) {
+        this.verticeChegada = verticeChegada;
     }
     
     public String getNome() {
         return this.nome;
     }
 
-    public void setValor(String nome) {
+    public void setNome(String nome) {
         this.nome = nome;
     }
     
+    public int getpeso() {
+        return this.peso;
+    }
+
+    public void setPeso(int peso) {
+        this.peso = peso;
+    }
+    
+
 
 }

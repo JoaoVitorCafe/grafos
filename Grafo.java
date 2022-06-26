@@ -16,83 +16,148 @@ private String nome;
         return this.vertices;
     }
 
-    public void addVertice(Vertice vertice) {
-        // Adicionar vertices
+    public void addVertice(int valor) {
+        // Não é permitido vertices iguais
+        // Adicionar vertices se ele não existe ainda
+        if(this.findVertice(valor) != -1){
+            System.out.println("Vertice já existe");
+            return;
+        }
+
+        Vertice vertice = new Vertice(valor);
         this.vertices.add(vertice);
+    }
+
+    public int findVertice(int valor){
+        // Busca um vertice
+        // Caso o vertice existir retorna o indice e caso ele n exista retorna -1
+        for(int i = 0 ; i < vertices.size() ; i++) {
+            if(vertices.get(i).getValor() == valor) {
+                return i;
+            }
+        }
+        return -1;     
     }
 
     public void removeVertice(int valor) {
         // Remover vertices
         /*OBS remover a arestas ligada ao vertice também*/
+    
+        // Remoção do vertice
         for(int i = 0 ; i < vertices.size() ; i++) {
             if(vertices.get(i).getValor() == valor) {
                 vertices.remove(i);
             }
-        }  
-    }
+        }     
+
+        // Remoção das arestas ligadas ao vertice
+        for(int i = 0 ; i < arestas.size() ; i++) {
+            if(arestas.get(i).getVerticeSaida().getValor() == valor || arestas.get(i).getVerticeChegada().getValor() == valor) {
+                arestas.remove(i);
+            }
+        }
+    
+    }     
+
 
     public ArrayList<Aresta> getArestas() {
         // Retorna as arestas
         return this.arestas;
     }
 
-    public void addArestas(Aresta aresta) {
+    public void addArestas(String nome, int peso ,int valorSaida , int valorChegada) {
         // Adiciona uma aresta
-        this.arestas.add(aresta);
-    }
+        Aresta aresta = new Aresta(nome , peso);
+        
+        int indiceSaida = this.findVertice(valorSaida);
 
-    public void removeArestas(int valor1 , int valor2) {
-        // Remover arestas
-        for(int i = 0 ; i < arestas.size() ; i++) {
-            if(arestas.get(i).getVertice1().getValor() == valor1 && arestas.get(i).getVertice2().getValor() == valor2) {
-               arestas.remove(i);
-            }
-        }  
-    }
-
-    public Aresta findArestas(int valor1 , int valor2) {
-        // Testa existencia de uma aresta entre dois vertices
-        for(int i = 0 ; i < arestas.size() ; i++) {
-            if(arestas.get(i).getVertice1().getValor() == valor1 && arestas.get(i).getVertice2().getValor() == valor2) {
-              return arestas.get(i);
-            }
+        // Verifica se um vertice de saida da aresta existe
+        if( indiceSaida == -1){
+            System.out.println("Vertice de saida não  existe");
+            return;
         }
 
-        return new Aresta(null);
+        int indiceChegada = this.findVertice(valorChegada);
+        
+        // Verifica se um vertice de chegada da aresta existe
+        if( indiceChegada == -1){
+            System.out.println("Vertice de chegada não  existe");
+            return;
+        }
+
+        if(vertices.get(indiceSaida) == vertices.get(indiceChegada)){
+            System.out.println("Não é permitido a criação de uma aresta entre um único vertice");
+            return;
+        }
+
+        aresta.setVerticeSaida(vertices.get(indiceSaida));
+        aresta.setVerticeChegada(vertices.get(indiceChegada));
+        
+        this.arestas.add(aresta);
+        System.out.println("Aresta inserida com sucesso");
     }
+
+    public int findArestas(int valorSaida , int valorChegada) {
+        // Testa existencia de uma aresta entre dois vertices
+        // Permitir duas arestas iguais?
+        for(int i = 0 ; i < arestas.size() ; i++) {
+            if(arestas.get(i).getVerticeSaida().getValor() == valorSaida && arestas.get(i).getVerticeChegada().getValor() == valorChegada) {
+              return i;
+            }
+        }
+        return -1;
+    }
+
+    public void removeArestas(int valorSaida , int valorChegada) {
+        // Remover arestas
+        int indiceAresta = this.findArestas(valorSaida, valorChegada);
+        if(indiceAresta != -1){
+            arestas.remove(indiceAresta);
+        }    
+    }  
 
     public int getGrau(int valor) {
         int grau = 0;
         for(int i = 0 ; i < arestas.size() ; i++) {
-            if(arestas.get(i).getVertice1().getValor() == valor && arestas.get(i).getVertice2().getValor() == valor  ){
-               grau +=2;
-                // caso ele mande pra ele msm
-            } 
-            else if (arestas.get(i).getVertice1().getValor() == valor || arestas.get(i).getVertice2().getValor() == valor){
+            if (arestas.get(i).getVerticeSaida().getValor() == valor || arestas.get(i).getVerticeChegada().getValor() == valor){
                grau++;
             }
         }
         return grau;
     }
 
-    public Vertice maxGrau() {
+    public int maxGrau() {
         // calcula o grau maximo
-        int max = Integer.MIN_VALUE ;
+        if(vertices.size() == 0){
+            System.out.println("Não existem vertices no grafo");
+            return 0;
+        }
+
+        int max = Integer.MIN_VALUE;
         int indexVertice = 0;
+        
         for(int i = 0 ; i < vertices.size() ; i++) {
-            int valorVertice = vertices.get(i).getValor() ;
+            int valorVertice = vertices.get(i).getValor();
             if(this.getGrau(valorVertice) >= max) {
                 max = this.getGrau(valorVertice);
                 indexVertice = i;
             }
         }
-        return vertices.get(indexVertice);
+        
+        System.out.println("O vertice de maior grau é o vertice" + vertices.get(indexVertice).getValor() + "com grau" + max);
+        return indexVertice;
     }
 
-    public Vertice minGrau() {
+    public int minGrau() {
         // calcula o grau minimo
+        if(vertices.size() == 0){
+            System.out.println("Não existem vertices no grafo");
+            return 0;
+        }
+        
         int min = Integer.MAX_VALUE ;
         int indexVertice = 0;
+
         for(int i = 0 ; i < vertices.size() ; i++) {
             int valorVertice = vertices.get(i).getValor() ;
             if(this.getGrau(valorVertice) <= min) {
@@ -100,12 +165,20 @@ private String nome;
                 indexVertice = i;
             }
         }
-        return vertices.get(indexVertice);
+        
+        System.out.println("O vertice de menor grau é o vertice" + vertices.get(indexVertice).getValor() + "com grau" + min);
+        return indexVertice;
     }
 
     public float medioGrau() {
         // calcula o grau medio
         int tamanho = vertices.size();
+
+        if(tamanho == 0){
+            System.out.println("Não existem vertices no grafo");
+            return 0;
+        }
+
         int soma = 0;
         for(int i = 0 ; i < vertices.size() ; i++) {
             int valorVertice = vertices.get(i).getValor() ;
