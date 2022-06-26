@@ -21,6 +21,7 @@ public class Main {
             System.out.println("10 - Obter grau máximo");
             System.out.println("11 - Obter grau médio");
             System.out.println("12 - Verificar se o grafo é conexo");
+            System.out.println("13 - Ver matriz de adjacencias");
             
             System.out.println();
             System.out.print("Arestas => ");
@@ -30,14 +31,14 @@ public class Main {
 
             System.out.print("Vertices => ");
             grafo.showVertices();
+            System.out.println("\n");
 
-            System.out.println();
             System.out.print("Escolha uma opção : ");
             int option = input.nextInt();
             System.out.println();
 
-            // System.out.print("\033[H\033[2J");
-            // System.out.flush();
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
 
             switch (option) {
                 case 1:
@@ -89,7 +90,7 @@ public class Main {
                     System.out.print("Qual o vertice que deseja ver os adjacentes? ");
                     valor = input.nextInt();
                     verticesAdjacentes = grafo.getAdjacentes(valor);
-                    System.out.print("Essas sao os vertices adjacentes ");
+                    System.out.print("vertices adjacentes = ");
                     for(int i = 0 ; i < verticesAdjacentes.size() ; i++){
                         System.out.print(" " + verticesAdjacentes.get(i).getValor() + "");
                     }
@@ -115,7 +116,7 @@ public class Main {
                     // Verificar se grafo é conexo
                     break;
                 case 13:
-                    // Gerar matriz de adjacencias
+                    grafo.matrizAdjacencias();
                     break;
                 case 14:
                     // Caminho de euler

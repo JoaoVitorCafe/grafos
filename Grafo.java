@@ -281,5 +281,47 @@ public class Grafo {
         return verticesAdjacentes;
     }
 
+    public void matrizAdjacencias(){
+        int indiceAresta;
+        
+        System.out.println("--------------Matriz de Adjacencias-----------");
+        System.out.println("\n"); 
+
+        System.out.print("    ");
+        
+        for(int i = 0 ; i < this.vertices.size() ; i++){
+            System.out.print(" " + vertices.get(i).getValor()+"|");
+        }
+        System.out.println("\n");
+        
+
+        for(int i = 0 ; i < this.vertices.size() ; i++){
+            System.out.print(" " + vertices.get(i).getValor() + "| ");
+            for(int j = 0 ; j < this.vertices.size() ; j++){
+                indiceAresta = this.findArestas(vertices.get(i).getValor(), vertices.get(j).getValor());
+                
+                if(indiceAresta == -1){
+                    indiceAresta = this.findArestas(vertices.get(j).getValor(), vertices.get(i).getValor());
+                }
+                
+                if(indiceAresta != -1){
+                    System.out.print(" " + this.arestas.get(indiceAresta).getPeso()+"|");
+                } else {
+                    System.out.print(" " + 0 +"|"); 
+                }
+                
+            }
+ 
+            System.out.println("\n"); 
+        }
+        System.out.println("\n"); 
+        System.out.println("--------------Matriz de Adjacencias-----------");
+        System.out.println("\n");
+
+        
+    }
+
+
+
 
 }

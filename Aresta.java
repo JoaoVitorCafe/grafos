@@ -39,7 +39,7 @@ public class Aresta {
         this.nome = nome;
     }
     
-    public int getpeso() {
+    public int getPeso() {
         return this.peso;
     }
 
