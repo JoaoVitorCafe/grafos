@@ -22,6 +22,10 @@ public class Aresta {
         return this.verticeChegada;
     }
 
+    public void show() {
+        System.out.print("| "+this.getVerticeSaida().getValor() + " --> " + this.getVerticeChegada().getValor()+" | ");
+    }
+
     public void setVerticeChegada(Vertice verticeChegada) {
         this.verticeChegada = verticeChegada;
     }
