@@ -26,10 +26,13 @@ public class Aresta {
         this.verticeChegada = verticeChegada;
     }
 
-    public void show() {
-        System.out.print("| "+this.getVerticeSaida().getValor() + " --> " + this.getVerticeChegada().getValor()+" | ");
+    public void show(Grafo grafo) {
+        if(grafo.isDirecionado()){
+            System.out.print("| "+this.getVerticeSaida().getValor() + " --> " + this.getVerticeChegada().getValor()+" | ");
+        } else {
+            System.out.print("| "+this.getVerticeSaida().getValor() + " --- " + this.getVerticeChegada().getValor()+" | ");
+        }
     }
-
     
     public String getNome() {
         return this.nome;

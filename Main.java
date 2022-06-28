@@ -4,7 +4,8 @@ import java.util.*;
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        Grafo grafo = new Grafo();
+        boolean direcionado = false;
+        Grafo grafo = new Grafo(direcionado);
         boolean isAtivo = true; 
 
         while (isAtivo) {
@@ -22,6 +23,7 @@ public class Main {
             System.out.println("11 - Obter grau médio");
             System.out.println("12 - Verificar se o grafo é conexo");
             System.out.println("13 - Ver matriz de adjacencias");
+            System.out.println("14 - Verificar a existencia de uma caminho de euler");
             
             System.out.println();
             System.out.print("Arestas => ");
@@ -33,6 +35,7 @@ public class Main {
             grafo.showVertices();
             System.out.println("\n");
 
+            
             System.out.print("Escolha uma opção : ");
             int option = input.nextInt();
             System.out.println();
@@ -42,6 +45,12 @@ public class Main {
 
             switch (option) {
                 case 1:
+                    System.out.print("Deseja fazer um grafo direcionado?[S/N] ");
+                    char resp = input.next().charAt(0);
+                    if(resp == 'S' || resp == 's'){
+                        direcionado = true;
+                        grafo = new Grafo(direcionado);
+                    }
                     grafo.init();
                     System.out.println("Grafo iniciado com sucesso!");
                     break;
@@ -55,18 +64,37 @@ public class Main {
                     String nomeAresta = input.next();
                     System.out.print("Qual o peso da aresta? ");
                     int peso = input.nextInt();
-                    System.out.print("Qual o vertice de saida? ");
-                    int valorSaida = input.nextInt();
-                    System.out.print("Qual o vertice de chegada? ");
-                    int valorChegada = input.nextInt();
+                    int valorSaida , valorChegada;
+
+                    if(grafo.isDirecionado()){
+                        System.out.print("Qual o vertice de saida? ");
+                        valorSaida = input.nextInt();
+                        System.out.print("Qual o vertice de chegada? ");
+                        valorChegada = input.nextInt();
+                    } else {
+                        System.out.print("Qual o vertice 1? ");
+                        valorSaida = input.nextInt();
+                        System.out.print("Qual o vertice 2? ");
+                        valorChegada = input.nextInt();
+                    }
+                    
                     grafo.addArestas(nomeAresta, peso, valorSaida, valorChegada);
+                    
                     break;
                 case 4:
-                    System.out.print("Qual o vertice de saida? ");
-                    valorSaida = input.nextInt();
-                    System.out.print("Qual o vertice de chegada?");
-                    valorChegada = input.nextInt();
-                    int indiceAresta = grafo.findArestas(valorSaida, valorChegada);
+                    if(grafo.isDirecionado()){
+                        System.out.print("Qual o vertice de saida? ");
+                        valorSaida = input.nextInt();
+                        System.out.print("Qual o vertice de chegada? ");
+                        valorChegada = input.nextInt();
+                    } else {
+                        System.out.print("Qual o vertice 1? ");
+                        valorSaida = input.nextInt();
+                        System.out.print("Qual o vertice 2? ");
+                        valorChegada = input.nextInt();
+                    }
+                
+                    int indiceAresta = grafo.findAresta(valorSaida, valorChegada);
                     if (indiceAresta != -1) {
                         System.out.println("Aresta existe ");
                     } else {
@@ -79,13 +107,21 @@ public class Main {
                     grafo.removeVertice(valor);
                     break;
                 case 6:
+                if(grafo.isDirecionado()){
                     System.out.print("Qual o vertice de saida da aresta que deseja remover? ");
                     valorSaida = input.nextInt();
                     System.out.print("Qual o vertice de chegada da aresta que deseja remover? ");
                     valorChegada = input.nextInt();
+                } else {
+                    System.out.print("Qual o 1º vertice da aresta que deseja remover? ");
+                    valorSaida = input.nextInt();
+                    System.out.print("Qual o 2º vertice da aresta que deseja remover? ");
+                    valorChegada = input.nextInt();
+                }
                     grafo.removeArestas(valorSaida, valorChegada);
                     break;
                 case 7:
+                    // aqui
                     ArrayList<Vertice> verticesAdjacentes;
                     System.out.print("Qual o vertice que deseja ver os adjacentes? ");
                     valor = input.nextInt();
@@ -113,18 +149,27 @@ public class Main {
                     System.out.println("O grau do médio do grafo é: " + grauMedio);
                     break;
                 case 12:
-                    // Verificar se grafo é conexo
+                    if(grafo.isConexo()){
+                        System.out.println("Grafo é conexo"); 
+                    } else {
+                        System.out.println("Grafo não é conexo");
+                    }
                     break;
                 case 13:
                     grafo.matrizAdjacencias();
                     break;
                 case 14:
-                    // Caminho de euler
+                    if(grafo.euler()){
+                        System.out.println("Existe um caminho de euler");
+                    }else {
+                        System.out.println("Não existe um caminho de euler");
+                    }
                     break;
                 default:
                     isAtivo = false;
             }
 
+            
         }
 
     }

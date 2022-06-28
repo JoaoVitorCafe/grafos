@@ -6,9 +6,15 @@ public class Grafo {
     private ArrayList<Vertice> vertices = new ArrayList<Vertice>();
     private ArrayList<Aresta> arestas = new ArrayList<Aresta>();
     private String nome;
+    private boolean direcionado;
 
-    public Grafo() {
+    public Grafo(Boolean isDirecionado) {
         this.nome = "Default";
+        this.direcionado = isDirecionado;
+    }
+
+    public boolean isDirecionado(){
+        return this.direcionado;
     }
 
     public String getNome() {
@@ -41,7 +47,7 @@ public class Grafo {
     public void showArestas() {
         // printa linearmente as arestas
         for (int i = 0; i < arestas.size(); i++) {
-            arestas.get(i).show();
+            arestas.get(i).show(this);
         }
     }
 
@@ -131,7 +137,7 @@ public class Grafo {
         }
 
         // Não permite a criação de arestas iguais
-        if(findArestas(valorSaida, valorChegada) != -1){
+        if(findAresta(valorSaida, valorChegada) != -1){
             System.out.println("Não é permitido a criação de uma arestas iguais");
             return;
         }
@@ -144,8 +150,30 @@ public class Grafo {
         System.out.println("Aresta inserida com sucesso");
     }
 
-    public int findArestas(int valorSaida, int valorChegada) {
+    public int findAresta(int valorSaida, int valorChegada) {
         // Testa existencia de uma aresta entre dois vertices
+        
+        if(!this.isDirecionado()){
+            for (int i = 0; i < arestas.size(); i++) {
+                // se não for direcionado "tanto faz" os vertice serem entradas ou saidas;
+                
+                // compara se o valor de saida é igual ao valor de saida e o valor de chegada é igual ao valor de chegada
+                if ((arestas.get(i).getVerticeSaida().getValor() == valorSaida)
+                        && (arestas.get(i).getVerticeChegada().getValor() == valorChegada)) {
+                    return i;
+                }
+
+                // compara se o valor de chegada é igual ao valor de saida e o valor de saida é igual ao valor de chegada
+                if ((arestas.get(i).getVerticeChegada().getValor() == valorSaida)
+                        && (arestas.get(i).getVerticeSaida().getValor() == valorChegada)) {
+                    return i;
+                }
+            }
+        
+            return -1;
+        }
+
+        // procura os valores de saida e entrada equivalentes.
         for (int i = 0; i < arestas.size(); i++) {
             if (arestas.get(i).getVerticeSaida().getValor() == valorSaida
                     && arestas.get(i).getVerticeChegada().getValor() == valorChegada) {
@@ -157,7 +185,7 @@ public class Grafo {
 
     public void removeArestas(int valorSaida, int valorChegada) {
         // Remover arestas
-        int indiceAresta = this.findArestas(valorSaida, valorChegada);
+        int indiceAresta = this.findAresta(valorSaida, valorChegada);
         if (indiceAresta != -1) {
             arestas.remove(indiceAresta);
             System.out.println("Aresta removida");
@@ -251,17 +279,22 @@ public class Grafo {
         
         int indiceAresta;
         
+        // se for não for direcionado ele pega de todas.
+        // se for ele só pega as aresta em que ele é o valor de chegada.
+
         // pegar as arestas que possui o vertice como saida
-        for(int i = 0 ; i < vertices.size() ; i++){
-            indiceAresta = this.findArestas(valor, vertices.get(i).getValor());
-            if(indiceAresta != -1){
-                arestasAdjacentes.add(this.arestas.get(indiceAresta));
+        if(!this.isDirecionado()){
+            for(int i = 0 ; i < vertices.size() ; i++){
+                indiceAresta = this.findAresta(valor, vertices.get(i).getValor());
+                if(indiceAresta != -1){
+                    arestasAdjacentes.add(this.arestas.get(indiceAresta));
+                }
             }
         }
-
-        // pegar as arestas que possui o vertice  chegada
+            
+        // pegar as arestas que possui o vertice como chegada
         for(int i = 0 ; i < vertices.size() ; i++){
-            indiceAresta = this.findArestas(vertices.get(i).getValor() , valor );
+            indiceAresta = this.findAresta(vertices.get(i).getValor() , valor );
             if(indiceAresta != -1){
                 arestasAdjacentes.add(this.arestas.get(indiceAresta));
             }
@@ -269,13 +302,48 @@ public class Grafo {
 
         // pegar os vertices que sejam diferentes do passado como valor
         for(int i = 0 ; i < arestasAdjacentes.size() ; i++){
-            if(arestasAdjacentes.get(i).getVerticeChegada().getValor() != valor){
-                verticesAdjacentes.add(arestasAdjacentes.get(i).getVerticeChegada());
+            // pega os vertices de chegada(adjacentes) das arestas
+            if(!this.isDirecionado()){
+               if(arestasAdjacentes.get(i).getVerticeChegada().getValor() != valor){
+                    if(!verticesAdjacentes.contains(arestasAdjacentes.get(i).getVerticeChegada())){
+                        verticesAdjacentes.add(arestasAdjacentes.get(i).getVerticeChegada());
+                    }
+                }
             }
 
+            // pega os vertices de saida(adjacentes) das arestas
             if(arestasAdjacentes.get(i).getVerticeSaida().getValor() != valor){
-                verticesAdjacentes.add(arestasAdjacentes.get(i).getVerticeSaida());
+                if(!verticesAdjacentes.contains(arestasAdjacentes.get(i).getVerticeSaida())){
+                    verticesAdjacentes.add(arestasAdjacentes.get(i).getVerticeSaida());
+                }
             }
+        }
+
+        return verticesAdjacentes;
+    }
+
+    public ArrayList<Vertice> getChegadas(Vertice vertice){
+        // pega os vertices de chegada ligada ao vertice pressupondo que o vertice seja o vertice de saida
+
+        ArrayList<Aresta> arestasAdjacentes = new ArrayList<Aresta>();
+        ArrayList<Vertice> verticesAdjacentes = new ArrayList<Vertice>();
+
+        int indiceAresta;
+
+        // pegar as arestas que possui o vertice como saida
+        for(int i = 0 ; i < vertices.size() ; i++){
+            indiceAresta = this.findAresta(vertice.getValor() , vertices.get(i).getValor());
+            if(indiceAresta != -1){
+                arestasAdjacentes.add(this.arestas.get(indiceAresta));
+            }
+        }
+
+         // pegar os vertices que sejam diferentes do passado como valor
+         for(int i = 0 ; i < arestasAdjacentes.size() ; i++){
+            // pega os vertices de chegada(adjacentes) das arestas
+               if(arestasAdjacentes.get(i).getVerticeChegada().getValor() != vertice.getValor()){
+                    verticesAdjacentes.add(arestasAdjacentes.get(i).getVerticeChegada());
+                }
         }
 
         return verticesAdjacentes;
@@ -298,10 +366,10 @@ public class Grafo {
         for(int i = 0 ; i < this.vertices.size() ; i++){
             System.out.print(" " + vertices.get(i).getValor() + "| ");
             for(int j = 0 ; j < this.vertices.size() ; j++){
-                indiceAresta = this.findArestas(vertices.get(i).getValor(), vertices.get(j).getValor());
+                indiceAresta = this.findAresta(vertices.get(i).getValor(), vertices.get(j).getValor());
                 
                 if(indiceAresta == -1){
-                    indiceAresta = this.findArestas(vertices.get(j).getValor(), vertices.get(i).getValor());
+                    indiceAresta = this.findAresta(vertices.get(j).getValor(), vertices.get(i).getValor());
                 }
                 
                 if(indiceAresta != -1){
@@ -316,12 +384,88 @@ public class Grafo {
         }
         System.out.println("\n"); 
         System.out.println("--------------Matriz de Adjacencias-----------");
-        System.out.println("\n");
-
-        
+        System.out.println("\n"); 
+    }
+    
+    public ArrayList<Vertice> search(Vertice vertice  , ArrayList<Vertice> verticesConexos){
+        verticesConexos.add(vertice);
+        ArrayList<Vertice> verticesAdjacentes = new ArrayList<Vertice>();
+        verticesAdjacentes = getAdjacentes(vertice.getValor());
+        for(int i = 0 ; i < verticesAdjacentes.size() ; i++){
+            if(!verticesConexos.contains(verticesAdjacentes.get(i))){
+                verticesConexos = this.search(verticesAdjacentes.get(i), verticesConexos);
+            }
+        }
+        return verticesConexos;
     }
 
+    public ArrayList<Vertice> searchDirecionado(Vertice vertice  , ArrayList<Vertice> verticesConexos){
+        // compara verificar os vertices de chegada
+        verticesConexos.add(vertice);
+        ArrayList<Vertice> verticesAdjacentes = new ArrayList<Vertice>();
+        verticesAdjacentes = getChegadas(vertice);
+        for(int i = 0 ; i < verticesAdjacentes.size() ; i++){
+            if(!verticesConexos.contains(verticesAdjacentes.get(i))){
+                verticesConexos = this.searchDirecionado(verticesAdjacentes.get(i), verticesConexos);
+            }
+        }
+        return verticesConexos;
+    }
 
+    public boolean isConexo(){
+        ArrayList<Vertice> verticesConexos = new ArrayList<Vertice>();
+        ArrayList<Vertice> verticesConexosDirecionados = new ArrayList<Vertice>();
 
+        if(this.vertices.size() == 0){
+            System.out.println("O grafo não possui vertices");
+            return false;
+        }
 
+        Vertice verticeInit = this.vertices.get(0);
+        
+        ArrayList<Vertice> conexos = this.search(verticeInit , verticesConexos);
+        
+        if(this.direcionado){
+            ArrayList<Vertice> conexosChegada = this.searchDirecionado(verticeInit , verticesConexosDirecionados);
+            System.out.println("Size conexos = " + conexos.size() + " Size conexos chegada = "+ conexosChegada.size() + " Size vertices = " + this.vertices.size());
+            if((conexos.size() == this.vertices.size())  &&  (conexosChegada.size() == this.vertices.size())){
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // System.out.println("Size " + conexos.size());
+        // for(int i = 0 ; i < conexos.size() ; i++){
+        //     System.out.println(conexos.get(i).getValor());
+        // }
+        
+        if(conexos.size() == this.vertices.size()){
+            return true;
+        } else {
+            return false;
+        }
+      }
+
+      public boolean euler(){
+        int impares = 0;
+        if(this.isConexo()){
+            for(int i = 0 ; i < this.vertices.size() ; i++){
+                int grauVertice = this.getGrau(this.vertices.get(i).getValor()); 
+                if(grauVertice % 2 != 0){
+                    impares++;
+                }
+            }
+
+            if(impares == 0){
+                return true;
+            }
+
+            if(impares == 2){
+                return true;
+            }
+        }
+
+        return false;
+      }
 }
